@@ -1,0 +1,6 @@
+<svg width="200" height="40" viewBox="0 0 200 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M41.4286 11H58L43.6883 35.1039H27.1169L41.4286 11Z" fill="#ff5e1eff "/>
+  <path d="M26.3636 11H38.4156L24.1039 35.1039H12.0519L26.3636 11Z" fill="#ffa78eff"/>
+  <path d="M14.3117 11H23.3506L9.03896 35.1039H0L14.3117 11Z" fill="#f6b85bff"/>
+  <text x="70" y="28" font-family="Outfit, sans-serif" font-size="35" fill="#666666ff" font-weight="600" rounded="full" bg-color="red">journal</text>
+</svg>
