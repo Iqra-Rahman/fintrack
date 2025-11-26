@@ -14,7 +14,7 @@ const Header = () => {
 
   const handleGetStarted = () => {
     if (isLoggedin) {
-      navigate('/canvas');
+      navigate('/dashboard');
     } else {
       navigate('/login');
     }
