@@ -1,28 +1,31 @@
-import budgetModel from "../models/budgetModel.js";
+import expenseModel from "../models/expenseModel.js";
 
-export const addBudget = async (req, res) => {
+export const addExpense = async (req, res) => {
   try {
-    const { category, limit } = req.body;
+    const { amount, category, date } = req.body;
 
-    const budget = new budgetModel({
+    const expense = new expenseModel({
+      amount,
       category,
-      limit,
+      date,
       userId: req.userId
     });
 
-    await budget.save();
-    res.json({ success: true, message: "Budget added", budget });
+    await expense.save();
+    res.json({ success: true, message: "Expense added", expense });
 
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
 
-export const getBudgets = async (req, res) => {
+
+export const getExpenses = async (req, res) => {
   try {
-    const budgets = await budgetModel.find({ userId: req.userId });
-    res.json({ success: true, budgets });
+    const expenses = await expenseModel.find({ userId: req.userId }).sort({ date: -1 });
+    res.json({ success: true, expenses });
+
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };

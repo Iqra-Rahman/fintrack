@@ -1,41 +1,83 @@
 import React, { useContext, useState } from "react";
-import { AppContent } from "../context/AppContext.jsx";
-import Menu from "../components/Menu.jsx";
+import { AppContent } from "../context/AppContext";
+import Menu from "../components/Menu";
+import axios from "axios";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const AddTransaction = () => {
-  const { userData } = useContext(AppContent);
+  const { backendUrl } = useContext(AppContent);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    title: "",
     amount: "",
     type: "expense",
     category: "",
     source: "",
     other: "",
     date: "",
-    description: "",
   });
+
+  axios.defaults.withCredentials = true;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Transaction Added:", formData);
-    // Add your submit logic here (API call or DB)
-  };
-
   const isIncome = formData.type === "income";
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      let response; // Store response here
+
+      if (formData.type === "income") {
+        const payload = {
+          amount: Number(formData.amount),
+          source: formData.source === "Other" ? formData.other : formData.source,
+          date: formData.date || new Date().toISOString(),
+        };
+
+        response = await axios.post(`${backendUrl}/api/income/add`, payload);
+      } else {
+        const payload = {
+          amount: Number(formData.amount),
+          category: formData.category === "Other" ? formData.other : formData.category,
+          date: formData.date || new Date().toISOString(),
+        };
+
+        response = await axios.post(`${backendUrl}/api/expense/add`, payload);
+      }
+
+      const { data } = response;
+
+      if (data.success) {
+        toast.success(`${formData.type === "income" ? "Income" : "Expense"} added!`);
+        
+        // LOGIC FIX: 
+        // If Income -> Go to Dashboard (to see total) or Transactions (to see list)
+        // If Expense -> Go to Budget (to see category limits)
+        if (formData.type === "income") {
+          navigate("/dashboard"); 
+        } else {
+          navigate("/budgetandcategories"); // Make sure this matches your route path in App.js
+        }
+      } else {
+        toast.error(data.message);
+        // Do NOT navigate if it failed
+      }
+
+    } catch (error) {
+      console.error(error); // Log error to console for debugging
+      toast.error("Something went wrong!");
+    }
+  };
 
   return (
     <div className="flex w-full text-white">
-      {/* Menu Sidebar */}
       <Menu />
 
-      {/* Main Content */}
       <div className="w-3/4 flex flex-col m-3 ml-0 rounded-3xl p-2">
         {/* Header */}
         <div className="bg-gray-950 mb-4 p-4 rounded-2xl">
@@ -47,25 +89,12 @@ const AddTransaction = () => {
           </p>
         </div>
 
-        {/* Form Section */}
+        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="bg-gray-950 p-6 rounded-2xl shadow-md space-y-5"
         >
           <div className="grid grid-cols-2 gap-6">
-            {/* Title */}
-            <div>
-              <label className="block mb-2 text-sm text-gray-400">Title</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="e.g. Grocery Shopping"
-                className="w-full p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
-              />
-            </div>
-
             {/* Amount */}
             <div>
               <label className="block mb-2 text-sm text-gray-400">
@@ -77,11 +106,12 @@ const AddTransaction = () => {
                 value={formData.amount}
                 onChange={handleChange}
                 placeholder="e.g. 1500"
-                className="w-full p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
+                required
+                className="w-full p-3 bg-gray-900 rounded-lg border border-gray-700 focus:border-violet-500 transition"
               />
             </div>
 
-            {/* Transaction Type */}
+            {/* Type */}
             <div>
               <label className="block mb-2 text-sm text-gray-400">
                 Transaction Type
@@ -90,14 +120,14 @@ const AddTransaction = () => {
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className="w-full p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
+                className="w-full p-3 bg-gray-900 rounded-lg border border-gray-700 focus:border-violet-500 transition"
               >
                 <option value="income">Income</option>
                 <option value="expense">Expense</option>
               </select>
             </div>
 
-            {/* Dynamic Field (Category or Source) */}
+            {/* Source OR Category */}
             {isIncome ? (
               <div>
                 <label className="block mb-2 text-sm text-gray-400">
@@ -107,7 +137,8 @@ const AddTransaction = () => {
                   name="source"
                   value={formData.source}
                   onChange={handleChange}
-                  className="w-full p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
+                  required
+                  className="w-full p-3 bg-gray-900 rounded-lg border border-gray-700 focus:border-violet-500 transition"
                 >
                   <option value="">Select Source</option>
                   <option value="Salary">Salary</option>
@@ -117,15 +148,15 @@ const AddTransaction = () => {
                   <option value="Other">Other</option>
                 </select>
 
-                {/* Show "Other" input if selected */}
                 {formData.source === "Other" && (
                   <input
                     type="text"
                     name="other"
                     value={formData.other}
                     onChange={handleChange}
-                    placeholder="Please specify source"
-                    className="w-full mt-3 p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
+                    placeholder="Specify source"
+                    required
+                    className="w-full mt-3 p-3 bg-gray-900 rounded-lg border border-gray-700 focus:border-violet-500 transition"
                   />
                 )}
               </div>
@@ -138,25 +169,27 @@ const AddTransaction = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
+                  required
+                  className="w-full p-3 bg-gray-900 rounded-lg border border-gray-700 focus:border-violet-500 transition"
                 >
                   <option value="">Select Category</option>
-                  <option value="Food">Food & Dining</option>
-                  <option value="Transport">Transportation</option>
+                  <option value="Food & Dining">Food & Dining</option>
+                  <option value="Transportation">Transportation</option>
                   <option value="Shopping">Shopping</option>
                   <option value="Entertainment">Entertainment</option>
+                  <option value="Bills">Bills</option>
                   <option value="Other">Other</option>
                 </select>
 
-                {/* Show "Other" input if selected */}
                 {formData.category === "Other" && (
                   <input
                     type="text"
                     name="other"
                     value={formData.other}
                     onChange={handleChange}
-                    placeholder="Please specify category"
-                    className="w-full mt-3 p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
+                    placeholder="Specify category"
+                    required
+                    className="w-full mt-3 p-3 bg-gray-900 rounded-lg border border-gray-700 focus:border-violet-500 transition"
                   />
                 )}
               </div>
@@ -170,31 +203,17 @@ const AddTransaction = () => {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="w-full p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
-              />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block mb-2 text-sm text-gray-400">
-                Description
-              </label>
-              <input
-                type="text"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Optional notes"
-                className="w-full p-3 bg-gray-900 rounded-lg outline-none border border-gray-700 focus:border-violet-500 transition"
+                required
+                className="w-full p-3 bg-gray-900 rounded-lg border border-gray-700 focus:border-violet-500 transition"
               />
             </div>
           </div>
 
-          {/* Submit Button */}
+          {/* Button */}
           <div className="flex justify-end mt-6">
             <button
               type="submit"
-              className="bg-purple-700 hover:bg-purple-600 transition px-6 py-2 rounded-full text-white "
+              className="bg-purple-700 hover:bg-purple-600 transition px-6 py-2 rounded-full"
             >
               Add Transaction
             </button>
