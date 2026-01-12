@@ -70,8 +70,8 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-500'>
-      <img onClick={() => navigate('/')} src={assets.logo} alt="" className='absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer' />
+    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br '>
+      <h2 onClick={()=>navigate('/')} className='text-3xl border-b-1 font-bold absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer text-purple-200'>FinTrack</h2>
 
       {!isEmailSent &&
         <form onSubmit={onSubmitEmail} className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'>
