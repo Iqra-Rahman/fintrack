@@ -2,13 +2,12 @@ import incomeModel from "../models/incomeModel.js";
 
 export const addIncome = async (req, res) => {
   try {
-    // 1. You must extract 'date' from req.body
     const { amount, source, date } = req.body; 
 
     const income = new incomeModel({
       amount,
       source,
-      date, // 2. You must pass 'date' here, otherwise Mongoose validation fails
+      date,
       userId: req.userId
     });
 
