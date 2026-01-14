@@ -28,7 +28,6 @@ const Dashboard = () => {
 
   const COLORS = ["#9333ea", "#06b6d4", "#4c1d95", "#2563eb", "#ec4899", "#8b5cf6"];
   
-  // Ensure we have data or empty arrays
   const expenseCategories = summary?.categoryBreakdown || [];
   const monthlyTrend = summary?.monthlyTrend || [];
   const recentTransactions = (transactions || []).slice(0, 5);
@@ -68,7 +67,7 @@ const Dashboard = () => {
                   <Pie
                     data={expenseCategories}
                     dataKey="value"
-                    nameKey="name" // Changed to match backend _id->name mapping
+                    nameKey="name" 
                     cx="50%"
                     cy="50%"
                     outerRadius={80}
