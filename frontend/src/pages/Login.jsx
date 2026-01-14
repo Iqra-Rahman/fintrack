@@ -5,13 +5,11 @@ import { AppContent } from '../context/AppContext.jsx';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-// ✅ set once globally
 axios.defaults.withCredentials = true;
 
 const Login = () => {
   const navigate = useNavigate();
 
-  // ✅ use the correct function from context
   const { backendUrl, setIsLoggedin, fetchUserFinance } = useContext(AppContent);
 
   const [state, setState] = useState('Sign Up');
@@ -45,13 +43,12 @@ const Login = () => {
         return;
       }
 
-      // ✅ login succeeded
+      // login succeeded
       setIsLoggedin(true);
 
-      // ✅ now cookie is available
+      // cookie is available
       await fetchUserFinance();
 
-      // ✅ redirect
       navigate('/dashboard');
     } catch (error) {
       toast.error(
@@ -98,7 +95,7 @@ const Login = () => {
           <div className="mb-4 flex items-center gap-3 border w-full rounded-full px-5 py-2.5 bg-[#333A5C]">
             <img src={assets.mail_icon} />
             <input
-              type="email"   // ✅ fixed
+              type="email"  
               placeholder="Email id"
               required
               className="bg-transparent outline-none"
