@@ -30,7 +30,7 @@ const AddTransaction = () => {
     e.preventDefault();
 
     try {
-      let response; // Store response here
+      let response; 
 
       if (formData.type === "income") {
         const payload = {
@@ -55,21 +55,17 @@ const AddTransaction = () => {
       if (data.success) {
         toast.success(`${formData.type === "income" ? "Income" : "Expense"} added!`);
         
-        // LOGIC FIX: 
-        // If Income -> Go to Dashboard (to see total) or Transactions (to see list)
-        // If Expense -> Go to Budget (to see category limits)
         if (formData.type === "income") {
           navigate("/dashboard"); 
         } else {
-          navigate("/budgetandcategories"); // Make sure this matches your route path in App.js
+          navigate("/budgetandcategories"); 
         }
       } else {
         toast.error(data.message);
-        // Do NOT navigate if it failed
       }
 
     } catch (error) {
-      console.error(error); // Log error to console for debugging
+      console.error(error); 
       toast.error("Something went wrong!");
     }
   };
