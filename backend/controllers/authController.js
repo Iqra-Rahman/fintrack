@@ -26,8 +26,8 @@ export const register = async(req, res) => {
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: email,
-            subject: 'Welcome to Daily Journal',
-            text: `Hello ${name},\n\nThank you for registering at Daily Journal! We're excited to have you on board.\n\nBest regards,\nThe Daily Journal Team`
+            subject: 'Welcome to your Personal Finance Tracker',
+            text: `Hello ${name},\n\nThank you for registering at Finance Tracker! We're excited to have you on board.\n\nBest regards,\nThe FinTrack Team`
         };
 
         await transporter.sendMail(mailOptions);
